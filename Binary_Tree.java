@@ -3,6 +3,7 @@ class TreeNode{
     int val;
     TreeNode left;
     TreeNode right;
+    TreeNode left1;
     TreeNode(int val){
         this.val=val;
         this.left=null;
