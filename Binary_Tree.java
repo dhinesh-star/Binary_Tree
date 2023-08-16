@@ -1,107 +1,124 @@
 import java.util.*;
 class TreeNode{
-    int val;
-    TreeNode left;
+    int data;
     TreeNode right;
-    TreeNode(int val){
-        this.val=val;
-        this.left=null;
-        this.right=null;
+    TreeNode left;
+    TreeNode(int data){
+        this.data=data;
     }
 }
-public class Binary_Tree {
-    /*This class is to create a binary tree from serialize string*/
-    static int itr=0;
-    public static TreeNode deserialize(String[] preOrder){
-        /*This function is used to create a Binary Tree from preOrder Traversal*/
-        if(itr>=preOrder.length){
+public class Binary_Tree{
+    static int itr;
+    public static TreeNode deserialize2(String[] preOrder){
+        if(itr==preOrder.length){
             return null;
         }
-        if(preOrder[itr].equals("-1")==true){
+        if(preOrder[itr].equalsIgnoreCase("null")==true){
             itr++;
             return null;
         }
-        int data=Integer.parseInt(preOrder[itr]);
-        TreeNode root = new TreeNode(data);
-
+        TreeNode root=new TreeNode(Integer.parseInt(preOrder[itr]));
         itr++;
-        root.left=deserialize(preOrder);
-        root.right=deserialize(preOrder);
-
+        System.out.println("itr:-"+itr);
+        root.left=deserialize2(preOrder);
+        root.right=deserialize2(preOrder);
         return root;
     }
-    public static void preOrder(TreeNode root){
-        if(root == null)
-            return ;
-        System.out.print(root.val+" ");
-        preOrder(root.left);
-        preOrder(root.right);
+    public static TreeNode deserialize(String serialize){
+        String[] preOrder = serialize.split(" ");
+        itr=0;
+        return deserialize2(preOrder);
     }
-    public static void inOrder(TreeNode root){
-        if(root==null){
-            return ;
+    public static void display(TreeNode node){
+        if(node==null)
+           return ;
+        StringBuilder sb=new StringBuilder();
+        sb.append((node.left!=null?node.left.data:"."));
+        sb.append("->"+node.data+"<-");
+        sb.append((node.right!=null?node.right.data:"."));
+        System.out.println(sb);
+        display(node.left);
+        display(node.right);
+    }
+    public static int maximumOfBinaryTree(TreeNode node){
+        if(node==null)
+            return Integer.MIN_VALUE;
+        int LST = maximumOfBinaryTree(node.left);
+        int RST = maximumOfBinaryTree(node.right);
+        return Math.max(node.data,Math.max(LST,RST));
+    }
+    public static int minimumOfBinaryTree(TreeNode node){
+        if(node==null)
+            return Integer.MAX_VALUE;
+        int LST = minimumOfBinaryTree(node.left);
+        int RST = minimumOfBinaryTree(node.right);
+        return Math.min(node.data,Math.min(LST,RST));
+    }
+    public static int sizeOfBinaryTree(TreeNode node){
+        if(node==null)
+            return 0;
+        int LST=sizeOfBinaryTree(node.left);
+        int RST=sizeOfBinaryTree(node.right);
+        return LST+RST+1;
+    }
+    static class Pair{
+        int height;
+        int diameter;
+        Pair(int height,int diameter){
+            this.height=height;
+            this.diameter=diameter;
         }
-        inOrder(root.left);
-        System.out.print(root.val+" ");
-        inOrder(root.right);
     }
-    public static void postOrder(TreeNode root){
-        if(root==null){
-            return ;
-        }
-        postOrder(root.left);
-        postOrder(root.right);
-        System.out.print(root.val+" ");
+//    public static int diameter(TreeNode root){
+//        //Faith of function to return diameter and height
+//        if(root==null)
+//            return 0;
+//
+//        int diameterOfLST=diameter(root.left);
+//        int diameterOfRST=diameter(root.right);
+//
+//        int heightOfLST=height(root.left);
+//        int heightOfRST=height(root.right);
+//
+//        int diameterThroughRoot=heightOfLST+heightOfRST+1;
+//        return Math.max(diameterThroughRoot,Math.max(diameterOfLST,diameterOfRST));
+//    }
+    public static Pair diameterAndHeightOfTree(TreeNode root){
+        if(root==null)
+            return new Pair(0,0);
+        //Faith of function to return diameter and height
+        Pair LST=diameterAndHeightOfTree(root.left);
+        Pair RST=diameterAndHeightOfTree(root.right);
+        int diameterThroughRoot=LST.height+RST.height+1;
+        int maxDiameter=Math.max(diameterThroughRoot,Math.max(LST.diameter, RST.diameter));
+        int heightThroughRoot=Math.max(LST.height, RST.height)+1;
+        return new Pair(heightThroughRoot,maxDiameter);
     }
-    static int height(TreeNode root){
-        //faith return the maximum height of binary tree
+    public static int diameter(TreeNode root){
+        return diameterAndHeightOfTree(root).diameter;
+    }
+    public static int height(TreeNode root){
         if(root==null)
             return 0;
-        int LST=height(root.left);
-        int RST=height(root.right);
-        return Math.max(LST,RST)+1;
-    }
-//    static int diameter2(TreeNode root){
-//        int diameterOfLST = dia
-//    }
-    static class PairOfDiameterAndHeight{
-        int diameter;
-        int height;
-        PairOfDiameterAndHeight(int diameter, int height){
-            this.diameter=diameter;
-            this.height=height;
-        }
-    }
-    static PairOfDiameterAndHeight diameterAndHeight(TreeNode root){
-        //faith of function is to return the diameter and height of tree
-        if(root==null){
-            return new PairOfDiameterAndHeight(0,0);
-        }
-        PairOfDiameterAndHeight LST = diameterAndHeight(root.left);
-        PairOfDiameterAndHeight RST = diameterAndHeight(root.right);
-
-        int diameterThroughRoot = LST.height+RST.height+1;
-        int maxDiameter = Math.max(diameterThroughRoot,Math.max(LST.diameter,RST.diameter));
-
-        int heightOfTree = Math.max(LST.height, RST.height)+1;
-
-        return new PairOfDiameterAndHeight(maxDiameter,heightOfTree);
+        int heightOfLST=height(root.left);
+        int heightOfRST=height(root.right);
+        return Math.max(heightOfLST,heightOfRST)+1;
     }
     public static void main(String[] args){
-        Scanner sc = new Scanner(System.in);
-        System.out.print("Enter the preorder of tree with null as -1 separated by space:- ");
-        String str = sc.nextLine();
-        String[] preOrder = str.split(" ");
-        TreeNode root = deserialize(preOrder);
-        preOrder(root);
-        System.out.println();
-        inOrder(root);
-        System.out.println();
-        postOrder(root);
-        System.out.println();
-        int heightOfTree=height(root);
-        System.out.println("Height of Tree:- "+heightOfTree);
-        PairOfDiameterAndHeight maxDiameter = diameterAndHeight(root);
-        System.out.println("Diameter of Tree:- "+maxDiameter.diameter);
+        Scanner sc=new Scanner(System.in);
+        System.out.print("Enter the serialize string:- ");
+        String serialize=sc.nextLine();
+        TreeNode root = deserialize(serialize);
+        display(root);
+        int max=maximumOfBinaryTree(root);
+        int min=minimumOfBinaryTree(root);
+        int size=sizeOfBinaryTree(root);
+        int heightOfBinary=height(root);
+        int diameterOfBinaryTree=diameter(root);
+        System.out.println("Height of Tree:- "+heightOfBinary);
+        System.out.println("Maximum of Tree:- "+max);
+        System.out.println("Minimum of Tree:- "+min);
+        System.out.println("Size of Tree:- "+size);
+        System.out.println("Diameter of Tree:- "+diameterOfBinaryTree);
     }
 }
